@@ -170,13 +170,13 @@ class FakeEmbeddingGenerator(EmbeddingGenerator):
         for image_id in self._get_image_id_list():
             if image_id not in self._img_emd_translator.get_name_mapping():
                 continue
-            g = self._img_emd_translator.get_name_mapping()[image_id]
-
-            row = [g]
-            row.extend(np.random.normal(size=self.get_dimensions()))  # sample normal distribution
-            prob = [g]
-            prob.extend([random.random() for x in range(0, len(ABB_LABEL_INDEX.keys()))])  # might need to add to one
-            yield row, prob
+            genes = self._img_emd_translator.get_name_mapping()[image_id]
+            for g in genes:
+                row = [g]
+                row.extend(np.random.normal(size=self.get_dimensions()))  # sample normal distribution
+                prob = [g]
+                prob.extend([random.random() for x in range(0, len(ABB_LABEL_INDEX.keys()))])  # might need to add to one
+                yield row, prob
 
 
 class DensenetEmbeddingGenerator(EmbeddingGenerator):
@@ -368,19 +368,20 @@ class DensenetEmbeddingGenerator(EmbeddingGenerator):
                         image_id = image_ids[iter_index] + '_'
                         if image_id not in self._img_emd_translator.get_name_mapping():
                             continue
-                        g = self._img_emd_translator.get_name_mapping()[image_id]
-                        # probabilities
-                        probs = F.sigmoid(logits)
-                        prob_list = [g]
-                        prob_list.extend(probs.cpu().data.numpy().tolist()[0])
+                        genes = self._img_emd_translator.get_name_mapping()[image_id]
+                        for g in genes:
+                            # probabilities
+                            probs = F.sigmoid(logits)
+                            prob_list = [g]
+                            prob_list.extend(probs.cpu().data.numpy().tolist()[0])
 
-                        # features
-                        features = features.cpu().data.numpy().tolist()
-                        row = [g]
-                        row.extend(features[0])
-                        del features
-                        del logits
-                        yield row, prob_list
+                            # features
+                            features = features.cpu().data.numpy().tolist()
+                            row = [g]
+                            row.extend(features[0])
+                            del features
+                            del logits
+                            yield row, prob_list
 
     def get_datasets_that_need_to_be_registered(self):
         """
@@ -426,7 +427,10 @@ class ImageEmbeddingFilterAndNameTranslator(object):
         with open(image_gene_node_attrs_file, 'r') as f:
             reader = csv.DictReader(f, delimiter='\t')
             for row in reader:
-                mapping_dict[row['filename'].split(',')[0]] = row['name']
+                f = row['filename'].split(',')[0]
+                if f not in mapping_dict:
+                    mapping_dict[f] = []
+                mapping_dict[f].append(row['name'])
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug('Mapping dict: ' + str(mapping_dict))
         return mapping_dict
@@ -647,7 +651,7 @@ class CellmapsImageEmbedder(object):
 
         :return:
         """
-        return self._img_emd_translator.get_oldname_to_new_name_mapping()
+        return self._img_emd_translator.c()
     
     def run(self):
         """
