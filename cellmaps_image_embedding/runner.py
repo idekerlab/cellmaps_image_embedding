@@ -464,7 +464,10 @@ class ImageEmbeddingFilterAndNameTranslator(object):
 
 class CellmapsImageEmbedder(object):
     """
-    Class to run algorithm
+    Executes the generation of image embeddings from fluorescent image data.
+
+    This class manages image processing, embedding generation using a specified model,
+    output file creation, and dataset registration for provenance tracking in FAIRSCAPE.
     """
 
     def __init__(self, outdir=None,
