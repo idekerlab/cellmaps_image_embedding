@@ -39,6 +39,11 @@ For information invoke :code:`cellmaps_image_embeddingcmd.py -h`
     URL or path to model file for image embedding. If left unspecified then the winning Densenet model
     from `Human Protein Atlas Kaggle Challenge`_ is used
 
+- ``--provenance``
+    Path to a JSON file containing FAIRSCAPE provenance metadata (name, project, organization, etc.). This file becomes
+    mandatory when the directory specified by ``--inputdir`` does not include ``ro-crate-metadata.json`` and lets the
+    tool run on inputs that were not packaged as a RO-Crate.
+
 - ``--name``
     Name of this run, needed for FAIRSCAPE. If unset, name value from the directory specified by --inputdir will be used.
 
@@ -52,7 +57,8 @@ For information invoke :code:`cellmaps_image_embeddingcmd.py -h`
     Image node attribute file fold to use. Default is 1.
 
 - ``--fake_embedder``
-    If set, generate fake embedding.
+    If set, generate fake embedding. This mode is only for testing/troubleshooting; the resulting ``image_emd.tsv`` contains
+    intentionally random vectors and is **not** suitable for downstream scientific analysis.
 
 - ``--dimensions``
     Dimensions of generated embedding vector. Default is 1024.
