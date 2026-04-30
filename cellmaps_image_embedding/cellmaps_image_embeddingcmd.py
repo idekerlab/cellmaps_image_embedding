@@ -56,6 +56,8 @@ def _parse_arguments(desc, args):
 
     parser.add_argument('--fold', default=EmbeddingGenerator.DEFAULT_FOLD, type=int,
                         help='Image node attribute file fold to use')
+    parser.add_argument('--device', default='cpu', type=str,
+                        help='Device to run inference on.')
     parser.add_argument('--fake_embedder', action='store_true',
                         help='If set, generate fake embedding')
     parser.add_argument('--dimensions', default=EmbeddingGenerator.DIMENSIONS, type=int,
@@ -134,7 +136,8 @@ specified when running this tool.
                                              outdir=os.path.abspath(theargs.outdir),
                                              model_path=theargs.model_path,
                                              suffix=theargs.suffix,
-                                             fold=theargs.fold)
+                                             fold=theargs.fold,
+                                             device=theargs.device)
         return CellmapsImageEmbedder(outdir=theargs.outdir,
                                      inputdir=theargs.inputdir,
                                      embedding_generator=gen,

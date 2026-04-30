@@ -200,6 +200,7 @@ class DensenetEmbeddingGenerator(EmbeddingGenerator):
                  model_path=None,
                  suffix=EmbeddingGenerator.SUFFIX,
                  fold=EmbeddingGenerator.DEFAULT_FOLD,
+                 device='cpu',
                  img_emd_translator=None):
         """
         Constructor
@@ -228,7 +229,7 @@ class DensenetEmbeddingGenerator(EmbeddingGenerator):
         self._gpus = ''
         self._image_size = 1536
         self._crop_size = 1024
-        self._device = 'cpu'
+        self._device = device
         self._cuda_available = False
         self._model_path = model_path
         self._suffix = suffix
@@ -381,6 +382,7 @@ class DensenetEmbeddingGenerator(EmbeddingGenerator):
                             images = Variable(images.cuda())
                         else:
                             images = Variable(images)
+                        images = images.to(self._device)
                         logits, features = self._model(images)
 
                         image_id = image_ids[iter_index] + '_'
